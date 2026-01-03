@@ -1,0 +1,207 @@
+:root {
+    --primary-color: #FF8D28;
+    --primary-light: #FFF5EC;
+    --text-gray: #8E8E93;
+    --bg-light: #F9FAFB;
+    --sidebar-width: 20%;
+    /* Chiếm đúng 1/5 màn hình */
+    --header-height: 75px;
+}
+
+.admin-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* 1. Header cố định trên cùng */
+.admin-header {
+    height: var(--header-height);
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: #ffffff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 30px;
+    z-index: 1000;
+    border-bottom: 1px solid #f2f2f2;
+}
+
+/* 2. Vùng thân dưới Header */
+.admin-body-content {
+    display: flex;
+    flex: 1;
+    margin-top: var(--header-height);
+}
+
+/* 3. Lớp bọc Sidebar (Chiếm 20%) */
+.admin-sidebar-wrapper {
+    width: var(--sidebar-width);
+    background: #ffffff;
+    height: calc(100vh - var(--header-height));
+    position: fixed;
+    top: var(--header-height);
+    left: 0;
+    border-right: 1px solid #f2f2f2;
+    z-index: 999;
+}
+
+/* 4. Màn hiển thị (Chiếm 80%) */
+.admin-main-display {
+    flex: 1;
+    margin-left: var(--sidebar-width);
+    /* Chừa chỗ cho Sidebar fixed */
+    padding: 30px;
+    background-color: var(--bg-light);
+    min-height: calc(100vh - var(--header-height));
+    overflow-y: auto;
+}
+
+/* CSS cho Menu trong Sidebar */
+.sidebar-nav li {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px 15px;
+    margin-bottom: 4px;
+    border-radius: 12px;
+    cursor: pointer;
+    color: var(--text-gray);
+    transition: 0.3s;
+}
+
+.sidebar-nav li.active {
+    background: var(--primary-light);
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+/* --- TỐI ƯU LẠI HEADER --- */
+.admin-header {
+    height: var(--header-height);
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    /* Căn giữa tất cả theo chiều dọc */
+    justify-content: space-between;
+    padding: 0 50px;
+    /* Khoảng cách an toàn hai đầu */
+    z-index: 1001;
+    border-bottom: 1px solid #FF8D28;
+    /* Đường kẻ cam đặc trưng */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+}
+
+/* Cụm Trái: Logo & Địa chỉ */
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    flex: 1;
+    /* Chiếm 1 phần bên trái */
+}
+
+.logo-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.brand-name {
+    font-size: 14px;
+    font-weight: 800;
+    color: #FF8D28;
+    line-height: 1.2;
+}
+
+.store-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: #FF8D28;
+}
+
+.location-box {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #8E8E93;
+    font-size: 13px;
+    padding-left: 20px;
+    border-left: 1px solid #eee;
+    /* Vạch ngăn nhẹ */
+}
+
+/* Cụm Giữa: Search Bar (Viên thuốc) */
+.header-search-container {
+    flex: 2;
+    /* Chiếm không gian gấp đôi hai bên để cân bằng */
+    display: flex;
+    justify-content: center;
+}
+
+.search-bar-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 550px;
+    /* Giới hạn để không bị quá dài như trong ảnh */
+}
+
+.search-bar-wrapper input {
+    width: 100%;
+    padding: 11px 20px 11px 45px;
+    border-radius: 30px;
+    border: 1px solid #FF8D28;
+    font-size: 14px;
+    outline: none;
+    transition: 0.3s;
+}
+
+.search-bar-wrapper .search-icon-inside {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #FF8D28;
+}
+
+/* Cụm Phải: Nút Logout */
+.header-right {
+    flex: 1;
+    /* Chiếm 1 phần bên phải */
+    display: flex;
+    justify-content: center;
+
+}
+
+.btn-logout-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 20px;
+    border-radius: 30px;
+    border: 1px solid #FF8D28;
+    background: #fff;
+    color: #333;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-logout-pill:hover {
+    background: #FF8D28;
+    color: #fff;
+}

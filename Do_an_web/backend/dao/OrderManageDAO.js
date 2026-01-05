@@ -48,8 +48,13 @@ class OrderManageDAO {
                         VALUES (@id, GETDATE(), @name, @addr, @phone, @method, N'Chờ xác nhận', @uId)`);
 
             // 3. Lưu chi tiết đơn hàng
-            for (const item of data.items) {
-                const detailId = await generateNextId('tbl_orderdetails');
+            // Tối ưu: Tạo tất cả ID một lần thay vì tạo từng ID trong vòng lặp
+            const detailIds = await generateNextId('tbl_orderdetails', data.items.length);
+            
+            for (let i = 0; i < data.items.length; i++) {
+                const item = data.items[i];
+                const detailId = detailIds[i];
+                
                 await transaction.request()
                     .input('id', sql.Char(10), detailId)
                     .input('qty', sql.Int, item.quantity)

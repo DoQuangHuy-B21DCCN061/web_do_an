@@ -373,6 +373,121 @@ class ProductManageDAO {
             return false;
         }
     }
+
+    // Nhập sản phẩm - lưu vào tbl_import_products và cập nhật tbl_products
+    async importProduct(productId, supplierId, quantity, importPrice) {
+        try {
+            const pool = await poolPromise;
+            
+            // 1. Tạo ID mới cho bản ghi nhập (trước khi bắt đầu transaction)
+            const importId = await generateNextId('tbl_import_products');
+            
+            // 2. Lấy ngày hiện tại
+            const currentDate = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
+            
+            const transaction = new sql.Transaction(pool);
+            await transaction.begin();
+
+            try {
+                
+                // 3. Thêm bản ghi vào tbl_import_products
+                await transaction.request()
+                    .input('id', sql.Char(10), importId)
+                    .input('import_date', sql.Date, currentDate)
+                    .input('import_price', sql.Float, importPrice)
+                    .input('quantity', sql.Int, quantity)
+                    .input('supplierId', sql.Char(10), supplierId)
+                    .input('productId', sql.VarChar, productId)
+                    .query(`INSERT INTO tbl_import_products (id, import_date, import_price, quantity, tbl_suppliersid, tbl_productsid) 
+                            VALUES (@id, @import_date, @import_price, @quantity, @supplierId, @productId)`);
+
+                // 4. Cập nhật newest_import_price và quantityInStock trong tbl_products
+                // Lấy số lượng hiện tại
+                const currentProduct = await transaction.request()
+                    .input('productId', sql.VarChar, productId)
+                    .query('SELECT quantityInStock FROM tbl_products WHERE id = @productId');
+                
+                if (currentProduct.recordset.length === 0) {
+                    throw new Error('Không tìm thấy sản phẩm');
+                }
+
+                const currentQuantity = currentProduct.recordset[0].quantityInStock || 0;
+                const newQuantity = currentQuantity + quantity;
+
+                // Cập nhật newest_import_price và quantityInStock
+                await transaction.request()
+                    .input('productId', sql.VarChar, productId)
+                    .input('newest_import_price', sql.Float, importPrice)
+                    .input('newQuantity', sql.Int, newQuantity)
+                    .query(`UPDATE tbl_products 
+                            SET newest_import_price = @newest_import_price, 
+                                quantityInStock = @newQuantity 
+                            WHERE id = @productId`);
+
+                await transaction.commit();
+                return true;
+            } catch (err) {
+                await transaction.rollback();
+                throw err;
+            }
+        } catch (err) {
+            console.error("Lỗi importProduct DAO:", err);
+            return false;
+        }
+    }
+
+    // Lấy lịch sử nhập sản phẩm với phân trang
+    async getImportHistory(page = 1, limit = 10) {
+        try {
+            const pool = await poolPromise;
+            const offset = (page - 1) * limit;
+            
+            // Query để lấy dữ liệu với JOIN để lấy tên sản phẩm và nhà cung cấp
+            const query = `
+                SELECT 
+                    ip.id,
+                    ip.import_date,
+                    ip.import_price,
+                    ip.quantity,
+                    ip.tbl_productsid as product_id,
+                    ip.tbl_suppliersid as supplier_id,
+                    p.name as product_name,
+                    s.name as supplier_name
+                FROM tbl_import_products ip
+                LEFT JOIN tbl_products p ON ip.tbl_productsid = p.id
+                LEFT JOIN tbl_suppliers s ON ip.tbl_suppliersid = s.id
+                ORDER BY ip.import_date DESC, ip.id DESC
+                OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY
+            `;
+            
+            const countQuery = `SELECT COUNT(*) as total FROM tbl_import_products`;
+            
+            const request = pool.request();
+            request.input('offset', sql.Int, offset);
+            request.input('limit', sql.Int, limit);
+            
+            const result = await request.query(query);
+            const countResult = await pool.request().query(countQuery);
+            const total = countResult.recordset[0] ? parseInt(countResult.recordset[0].total) : 0;
+            
+            return {
+                imports: result.recordset.map(row => ({
+                    id: row.id,
+                    import_date: row.import_date,
+                    import_price: row.import_price,
+                    quantity: row.quantity,
+                    product_id: row.product_id,
+                    product_name: row.product_name,
+                    supplier_id: row.supplier_id,
+                    supplier_name: row.supplier_name
+                })),
+                total
+            };
+        } catch (err) {
+            console.error("Lỗi getImportHistory DAO:", err);
+            return { imports: [], total: 0 };
+        }
+    }
 }
 
 module.exports = new ProductManageDAO();

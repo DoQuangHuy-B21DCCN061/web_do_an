@@ -7,6 +7,8 @@ import AdminLayout from './components/AdminLayout';
 import UISupplierManage from './pages/UISupplierManage';
 import SupplierDetailPage from './pages/SupplierDetailPage';
 import UIProductManage from './pages/UIProductManage';
+import UIImportProduct from './pages/UIImportProduct';
+import UIImportHistory from './pages/UIImportHistory';
 import UICustomerManage from './pages/UICustomerManage';
 import UICategoryManage from './pages/UICategoryManage';
 import CategoryDetailPage from './pages/CategoryDetailPage';
@@ -58,6 +60,8 @@ function App() {
           <Route path="statistic" element={<UIStatistic />} />
           <Route path="customers" element={<UICustomerManage />} />
           <Route path="products" element={<UIProductManage />} />
+          <Route path="products/import" element={<UIImportProduct />} />
+          <Route path="products/import/history" element={<UIImportHistory />} />
           <Route path="suppliers" element={<UISupplierManage />} />
           <Route path="suppliers/:id" element={<SupplierDetailPage />} />
           <Route path="categories" element={<UICategoryManage />} />

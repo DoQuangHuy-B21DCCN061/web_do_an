@@ -18,7 +18,7 @@ class ReviewManagerDAO {
                     row.id.trim(), row.rating, row.comment, row.created_at,
                     row.productsid.trim(), row.usersid.trim(), row.tbl_orderdetailsid.trim()
                 ),
-                status: row.status ? 1 : 0,
+                status: (row.status !== undefined && row.status !== null) ? (row.status ? 1 : 0) : 1, // Mặc định là 1 nếu cột chưa tồn tại
                 user_name: row.user_name
             }));
         } catch (error) {
@@ -31,11 +31,20 @@ class ReviewManagerDAO {
     async changeStatus(id, status) {
         try {
             const pool = await poolPromise;
-            await pool.request()
+            // Đảm bảo status là boolean (0 hoặc 1)
+            const statusValue = status === 1 || status === true ? 1 : 0;
+            const result = await pool.request()
                 .input('id', sql.Char(10), id)
-                .input('status', sql.Bit, status)
+                .input('status', sql.Bit, statusValue)
                 .query('UPDATE tbl_productreviews SET status = @status WHERE id = @id');
-            return true;
+            
+            // Kiểm tra xem có bản ghi nào được cập nhật không
+            if (result.rowsAffected[0] > 0) {
+                return true;
+            } else {
+                console.error("DAO Error (changeStatus): Không tìm thấy đánh giá với id:", id);
+                return false;
+            }
         } catch (err) {
             console.error("DAO Error (changeStatus):", err);
             return false;

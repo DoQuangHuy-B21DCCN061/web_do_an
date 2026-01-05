@@ -6,13 +6,19 @@ const User = require('../models/User');
 
 class StatisticDAO {
     // 1. Thống kê doanh thu (Đã chạy đúng)
-    async getRevenueByFlex(type, month, year) {
+    async getRevenueByFlex(type, month, year, limit = 10) {
         const pool = await poolPromise;
         const query = (type === 'dailyInMonth')
             ? `SELECT id, total_price, bill_date FROM tbl_bills WHERE MONTH(bill_date) = @month AND YEAR(bill_date) = @year`
             : `SELECT id, total_price, bill_date FROM tbl_bills WHERE YEAR(bill_date) = @year`;
         const result = await pool.request().input('month', sql.Int, month).input('year', sql.Int, year).query(query);
-        return result.recordset.map(r => new Bill(r.id, r.total_price, r.bill_date));
+        // Trả về plain objects để frontend dễ xử lý
+        // Note: limit sẽ được xử lý ở frontend sau khi group by ngày/tháng
+        return result.recordset.map(r => ({
+            id: r.id,
+            total_price: r.total_price,
+            bill_date: r.bill_date
+        }));
     }
 
     // 2. SỬA LỖI: Top 5 Sản phẩm (Gói vào OrderDetail và Order)
@@ -34,30 +40,60 @@ class StatisticDAO {
             .query(query);
 
         return result.recordset.map(r => ({
-            // Bước 18, 21: Gói dữ liệu vào thực thể riêng
-            detail: new OrderDetail(r.productsid, r.quantity),
-            order: new Order(r.oid, r.order_date)
+            order_date: r.order_date,
+            quantity: r.quantity,
+            productsid: r.productsid,
+            order_id: r.oid
         }));
     }
 
-    // 3. SỬA LỖI: Top 5 Khách hàng (Gói vào User và Bill)
-    async getTopCustomers(type, month, year) {
+    // 3. SỬA LỖI: Top Khách hàng (Gói vào User và Bill)
+    async getTopCustomers(type, month, year, limit = 10) {
         const pool = await poolPromise;
         const timeFilter = (type === 'dailyInMonth')
             ? `WHERE MONTH(b.bill_date) = @month AND YEAR(b.bill_date) = @year`
             : `WHERE YEAR(b.bill_date) = @year`;
 
-        const query = `SELECT TOP 5 u.name, SUM(b.total_price) as spent, u.id, b.id as bid, b.bill_date
+        const query = `SELECT TOP (${limit}) u.name, SUM(b.total_price) as spent, u.id
                        FROM tbl_bills b JOIN tbl_users u ON b.usersid = u.id 
                        ${timeFilter}
-                       GROUP BY u.name, u.id, b.id, b.bill_date ORDER BY spent DESC`;
+                       GROUP BY u.id, u.name
+                       ORDER BY spent DESC`;
 
         const result = await pool.request().input('month', sql.Int, month).input('year', sql.Int, year).query(query);
+        // Trả về plain objects để frontend dễ xử lý
         return result.recordset.map(r => ({
-            // Bước 6, 9 (Luồng khách hàng): Gói dữ liệu vào User và Bill
-            user: new User(r.id, r.name),
-            bill: new Bill(r.bid, r.spent, r.bill_date),
-            name: r.name
+            name: r.name,
+            spent: r.spent,
+            user_id: r.id
+        }));
+    }
+
+    // 4. Top sản phẩm bán chạy nhất
+    async getTopProducts(type, month, year, limit = 10) {
+        const pool = await poolPromise;
+        const timeFilter = (type === 'dailyInMonth')
+            ? `WHERE MONTH(o.order_date) = @month AND YEAR(o.order_date) = @year`
+            : `WHERE YEAR(o.order_date) = @year`;
+
+        const query = `
+            SELECT TOP (${limit}) od.productsid, p.name as product_name, SUM(od.quantity) as total_quantity
+            FROM tbl_orderdetails od 
+            JOIN tbl_orders o ON od.ordersid = o.id
+            JOIN tbl_products p ON od.productsid = p.id
+            ${timeFilter}
+            GROUP BY od.productsid, p.name
+            ORDER BY total_quantity DESC
+        `;
+
+        const request = pool.request()
+            .input('month', sql.Int, month)
+            .input('year', sql.Int, year);
+        const result = await request.query(query);
+        return result.recordset.map(r => ({
+            product_id: r.productsid,
+            product_name: r.product_name,
+            total_quantity: r.total_quantity
         }));
     }
 }

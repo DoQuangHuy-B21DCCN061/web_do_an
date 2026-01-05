@@ -9,7 +9,9 @@ const dbConfig = {
     options: {
         encrypt: false,
         trustServerCertificate: true
-    }
+    },
+    requestTimeout: 30000, // Tăng timeout lên 30 giây cho các đơn hàng lớn
+    connectionTimeout: 30000
 };
 
 const poolPromise = new sql.ConnectionPool(dbConfig)

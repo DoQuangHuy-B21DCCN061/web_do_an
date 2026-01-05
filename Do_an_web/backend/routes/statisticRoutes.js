@@ -8,5 +8,6 @@ router.get('/revenue', statisticController.getRevenueFlex);
 router.get('/top-selling-products', statisticController.getProductsQuantity);
 
 router.get('/top-customers', statisticController.getTopCustomers);
+router.get('/top-products', statisticController.getTopProducts);
 
 module.exports = router;

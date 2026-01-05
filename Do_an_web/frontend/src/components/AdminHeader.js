@@ -64,7 +64,16 @@ const AdminHeader = () => {
             {/* BÊN TRÁI: Thương hiệu & Địa điểm */}
             <div className="header-left">
                 <div className="logo-group">
-                    <img src="/logo.png" alt="Logo" style={{ width: '35px' }} />
+                    <img 
+                        src="/logo.png" 
+                        alt="Logo" 
+                        style={{ 
+                            width: '40px', 
+                            height: '40px', 
+                            objectFit: 'contain',
+                            borderRadius: '4px'
+                        }} 
+                    />
                     <div className="logo-text">
                         <span className="brand-name">KID & MOM STORE</span>
                         <span className="store-name">THANH XUÂN</span>

@@ -38,15 +38,22 @@ const reviewController = {
         try {
             const { id } = req.params;
             const { status } = req.body;
+            
+            // Kiểm tra dữ liệu đầu vào
+            if (id === undefined || status === undefined) {
+                return res.status(400).json({ success: false, message: "Thiếu thông tin id hoặc status" });
+            }
+
             const success = await ReviewManagerDAO.changeStatus(id, status);
 
             if (success) {
                 res.status(200).json({ success: true, message: "Cập nhật trạng thái thành công!" });
             } else {
-                res.status(400).json({ success: false, message: "Cập nhật thất bại!" });
+                res.status(400).json({ success: false, message: "Cập nhật thất bại! Có thể không tìm thấy đánh giá với id này." });
             }
         } catch (err) {
-            res.status(500).json({ success: false, message: "Lỗi server" });
+            console.error("Controller Error (updateReviewStatus):", err);
+            res.status(500).json({ success: false, message: "Lỗi server: " + err.message });
         }
     }
 };

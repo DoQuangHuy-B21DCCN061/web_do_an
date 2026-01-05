@@ -249,4 +249,47 @@ const getProductById = async (req, res) => {
     }
 };
 
-module.exports = { getProducts, updateProduct, createProduct, removeProduct, getProductById, searchProducts };
+const importProduct = async (req, res) => {
+    try {
+        const { productId, supplierId, quantity, importPrice } = req.body;
+
+        // Validation
+        if (!productId || !supplierId || !quantity || !importPrice) {
+            return res.status(400).json({ success: false, message: 'Vui lòng điền đầy đủ thông tin!' });
+        }
+
+        if (parseInt(quantity) <= 0 || parseFloat(importPrice) <= 0) {
+            return res.status(400).json({ success: false, message: 'Số lượng và giá nhập phải lớn hơn 0!' });
+        }
+
+        const success = await ProductManageDAO.importProduct(
+            productId,
+            supplierId,
+            parseInt(quantity),
+            parseFloat(importPrice)
+        );
+
+        if (success) {
+            res.json({ success: true, message: 'Nhập sản phẩm thành công!' });
+        } else {
+            res.status(500).json({ success: false, message: 'Nhập sản phẩm thất bại!' });
+        }
+    } catch (err) {
+        console.error("Lỗi importProduct Controller:", err);
+        res.status(500).json({ success: false, message: err.message || 'Lỗi hệ thống' });
+    }
+};
+
+const getImportHistory = async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const result = await ProductManageDAO.getImportHistory(page, limit);
+        res.json({ success: true, ...result });
+    } catch (err) {
+        console.error("Lỗi getImportHistory Controller:", err);
+        res.status(500).json({ success: false, message: 'Lỗi hệ thống' });
+    }
+};
+
+module.exports = { getProducts, updateProduct, createProduct, removeProduct, getProductById, searchProducts, importProduct, getImportHistory };

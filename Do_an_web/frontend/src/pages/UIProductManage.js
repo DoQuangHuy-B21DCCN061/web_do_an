@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import { FiPlus, FiTrash2, FiEdit3, FiSave, FiX, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { FiPlus, FiTrash2, FiEdit3, FiSave, FiX, FiChevronLeft, FiChevronRight, FiPackage, FiClock } from 'react-icons/fi';
 
 // Toast component
 function Toast({ show, message, success = true, onClose }) {
@@ -20,6 +20,7 @@ function Toast({ show, message, success = true, onClose }) {
 
 const UIProductManage = () => {
     const location = useLocation();
+    const navigate = useNavigate();
     const [products, setProducts] = useState([]);
     const [showForm, setShowForm] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
@@ -211,9 +212,17 @@ const UIProductManage = () => {
             <div className="admin-card">
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '25px' }}>
                     <h2 style={{ color: '#333' }}>📦 Quản lý sản phẩm</h2>
-                    <button onClick={handleAddNew} className="logout-btn" style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#FF8D28' }}>
-                        <FiPlus /> Thêm sản phẩm mới
-                    </button>
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                        <button onClick={() => navigate('/admin/products/import/history')} className="logout-btn" style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#17a2b8' }}>
+                            <FiClock /> Lịch sử nhập
+                        </button>
+                        <button onClick={() => navigate('/admin/products/import')} className="logout-btn" style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#28a745' }}>
+                            <FiPackage /> Nhập sản phẩm
+                        </button>
+                        <button onClick={handleAddNew} className="logout-btn" style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#FF8D28' }}>
+                            <FiPlus /> Thêm sản phẩm mới
+                        </button>
+                    </div>
                 </div>
 
                 <table className="admin-table" style={{ width: '100%', borderCollapse: 'collapse' }}>

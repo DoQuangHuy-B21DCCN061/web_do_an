@@ -1,0 +1,174 @@
+/* Layout chung */
+.profile-page {
+    background-color: #fcfcfc;
+    min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+}
+
+.profile-layout {
+    display: flex;
+    max-width: 1200px;
+
+    gap: 30px;
+    padding: 0 20px;
+}
+
+/* Sidebar bên trái */
+.profile-sidebar {
+    width: 280px;
+    background: #fff;
+    border-radius: 15px;
+    padding: 30px 0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    height: fit-content;
+}
+
+.user-avatar-section {
+    text-align: center;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 20px;
+}
+
+.user-avatar-section img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #FF8D28;
+    margin-bottom: 10px;
+}
+
+.user-avatar-section h3 {
+    font-size: 18px;
+    color: #333;
+    margin: 0;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px 25px;
+    color: #666;
+    cursor: pointer;
+    transition: 0.3s;
+    font-weight: 500;
+}
+
+.nav-item:hover {
+    background-color: #fff5ed;
+    color: #FF8D28;
+}
+
+.nav-item.active {
+    color: #FF8D28;
+    background-color: #fff5ed;
+    border-right: 4px solid #FF8D28;
+}
+
+/* Nội dung chi tiết bên phải */
+.profile-content {
+    flex: 1;
+}
+
+.profile-content h2 {
+    font-size: 24px;
+    color: #222;
+    margin-bottom: 25px;
+}
+
+.detail-card {
+    background: #fff;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border: 1px solid #f0f0f0;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    transition: 0.2s;
+}
+
+.detail-item:hover {
+    border-color: #FF8D28;
+}
+
+.detail-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1;
+}
+
+.detail-info label {
+    font-size: 13px;
+    color: #888;
+    font-weight: bold;
+}
+
+.detail-info span {
+    font-size: 16px;
+    color: #333;
+}
+
+.detail-info input {
+    font-size: 16px;
+    color: #333;
+    border: none;
+    outline: none;
+    background: transparent;
+    width: 100%;
+    border-bottom: 1px solid #FF8D28;
+    padding: 5px 0;
+}
+
+.edit-icon {
+    color: #FF8D28;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 50%;
+    transition: 0.2s;
+}
+
+.edit-icon:hover {
+    background-color: #fff5ed;
+}
+
+.save-btn {
+    margin-top: 20px;
+    width: 100%;
+    padding: 15px;
+    background-color: #FF8D28;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.save-btn:hover {
+    background-color: #e67e22;
+    box-shadow: 0 4px 12px rgba(255, 141, 40, 0.3);
+}
+
+.cancel-btn {
+    margin-top: 10px;
+    width: 100%;
+    background: transparent;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    color: #666;
+}
